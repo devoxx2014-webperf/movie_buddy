@@ -55,6 +55,7 @@ public class Server extends Verticle {
       if (path.equals("/") || path.contains("..")) {
         path = "/index.html";
       }
+      
       req.response().sendFile(FILES_PREFIX + "/public/" + path);
     });
     
@@ -133,7 +134,7 @@ public class Server extends Verticle {
         Movie movie = findMovieById(parseInt(userRate.getString("movieId")), movies).get();
         if (user.rates == null) user.rates = new HashMap<>();
         user.rates.put(movie, parseInt(userRate.getString("rate")));
-        req.response().setStatusCode(201).end();
+        req.response().putHeader("location", "/rates/"+user._id).setStatusCode(301).end();
       });
     });
     
@@ -180,7 +181,7 @@ public class Server extends Verticle {
     });
     
     int port = parseInt(getProperty("app.port", "3000"));
-    server.requestHandler(route).listen(port, "localhost");
+    server.requestHandler(route).listen(port);
     container.logger().info("Listening on " + port + " ...");
   }
 }
